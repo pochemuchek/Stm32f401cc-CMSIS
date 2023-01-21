@@ -13,8 +13,7 @@ void adc1_init_tim2(void){
 
 void adc1_init_gpio(void){
 	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
-	GPIOA->MODER &= ~GPIO_MODER_MODER7_0; /* input mode */
-	GPIOA->MODER &= ~GPIO_MODER_MODER7_1; 
+	GPIOA->MODER |= GPIO_MODER_MODER7; /* analog mode */
 	
 	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN; /* blink led pc13 */
 	GPIOC->MODER |= GPIO_MODER_MODER13_0;
@@ -27,7 +26,7 @@ void ADC_IRQHandler(void){
 	GPIOC->ODR ^= GPIO_ODR_ODR_13;
 	if(ADC1->SR & ADC_SR_EOC){
 		data = (ADC1->DR & ADC_DR_DATA);
-		if(data > 180){
+		if(data > 0x0F00){
 			GPIOA->ODR |= GPIO_ODR_ODR_12;
 		}
 		else{
