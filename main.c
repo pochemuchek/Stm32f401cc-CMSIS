@@ -7,7 +7,7 @@ int main(void)
 	GPIOA->MODER |= GPIO_MODER_MODER12_0;
 	GPIOA->MODER &= ~GPIO_MODER_MODER12_1;
 	
-	adc1_init_main();
+	/*adc1_init_main();*/
 	int i = 0;
 	while(1)
 	{

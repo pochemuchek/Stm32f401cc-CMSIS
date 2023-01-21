@@ -5,7 +5,7 @@ uint16_t data = 0;
 void adc1_init_tim2(void){
 	RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;/*start clocking of tim2*/
 	TIM2->ARR = 6400 ; 
-	TIM2->PSC = 200000 ;	
+	TIM2->PSC = 200000 ;	/* u need to set time on yours own */
 	TIM2->CR2 |= TIM_CR2_MMS_1;/*enable trg0 to output*/
 	TIM2->CR1 |= TIM_CR1_CEN; /* enable counter */
 }
@@ -25,8 +25,8 @@ void ADC_IRQHandler(void){
 	data = 0;
 	GPIOC->ODR ^= GPIO_ODR_ODR_13;
 	if(ADC1->SR & ADC_SR_EOC){
-		data = (ADC1->DR & ADC_DR_DATA);
-		if(data > 0x0F00){
+		data = (((ADC1->DR | 0x8000)>>4) & 0xFF);/* it must be tuned for current sensor*/
+		if(data > 150){
 			GPIOA->ODR |= GPIO_ODR_ODR_12;
 		}
 		else{
