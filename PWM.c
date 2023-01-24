@@ -42,5 +42,5 @@ void pwm_init_tim9(void){
 }
 
 void pwm_set_duty_cycle(uint8_t duty) {
-  TIM9->CCR1 = ((uint32_t)duty*TIM9->ARR)/100;
+  TIM9->CCR1 = ((uint32_t)duty*TIM9->ARR);
 }
