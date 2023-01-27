@@ -55,8 +55,6 @@ void spi1_init_master(void){
 	SPI1->CR1 |= (SPI_CR1_SSM | SPI_CR1_SSI);
 	SPI1->CR1 |= SPI_CR1_MSTR; /* Master mode selection*/
 	
-	SPI1->CR2 |= SPI_CR2_TXEIE; /* Tx buffer empty interupt enable */
-	
 	/*---------- end Settings SPI1 ----------*/
 	
 	spi1_dma_rx_init();
@@ -68,6 +66,7 @@ void spi1_init_master(void){
 
 
 void spi1_init_slave(void){
+	
 	RCC->APB2ENR |= RCC_APB2ENR_SPI1EN; /* Start clocking spi1*/
 	SPI1->CR1 &= ~SPI_CR1_SPE; /* disable spi*/
 	SPI1->CR1 = 0;
@@ -86,22 +85,20 @@ void spi1_init_slave(void){
 	SPI1->CR1 |= SPI_CR1_SSM;
 	SPI1->CR1 |= SPI_CR1_LSBFIRST; /* this bit must be the same as transiver, LSB mode */
 	
-	SPI1->CR2 |= SPI_CR2_RXNEIE; /* Rx buffer empty interupt enable */
-	
 	/*---------- end Settings SPI1 ----------*/
 	
 	spi1_dma_rx_init();
-	
-	/* spi1_dma_tx_init(); */
+	spi1_dma_tx_init();
 	
 	SPI1->CR1 |= SPI_CR1_SPE; /* spi enable */
 }	
 
 void spi1_dma_tx_init(void){
-	dma2_init_tx();
+	dma2s3_init_tx();
 	SPI1->CR2 |= SPI_CR2_TXDMAEN;
 }
 void spi1_dma_rx_init(void){
-	dma2_init_rx();
+	dma2s2_init_rx();
 	SPI1->CR2 |= SPI_CR2_RXDMAEN;
+	spi1_set_nss();
 }
