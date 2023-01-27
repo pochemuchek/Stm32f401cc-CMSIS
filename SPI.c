@@ -57,8 +57,8 @@ void spi1_init_master(void){
 	
 	/*---------- end Settings SPI1 ----------*/
 	
-	spi1_dma_rx_init();
-	spi1_dma_tx_init();
+	spi1_dma2_rx_init();
+	spi1_dma2_tx_init();
 	
 	SPI1->CR1 |= SPI_CR1_SPE; /* spi enable */
 	
@@ -87,18 +87,46 @@ void spi1_init_slave(void){
 	
 	/*---------- end Settings SPI1 ----------*/
 	
-	spi1_dma_rx_init();
-	spi1_dma_tx_init();
+	spi1_dma2_rx_init();
+	spi1_dma2_tx_init();
 	
 	SPI1->CR1 |= SPI_CR1_SPE; /* spi enable */
 }	
 
-void spi1_dma_tx_init(void){
+void spi1_dma2_tx_init(void){
 	dma2s3_init_tx();
 	SPI1->CR2 |= SPI_CR2_TXDMAEN;
 }
-void spi1_dma_rx_init(void){
+void spi1_dma2_rx_init(void){
 	dma2s2_init_rx();
 	SPI1->CR2 |= SPI_CR2_RXDMAEN;
 	spi1_set_nss();
+}
+
+void spi1_set_data_format(uint8_t format){
+	SPI1->CR1 &= ~SPI_CR1_SPE; /* disable spi*/
+	if(format == BYTE){
+		SPI1->CR1 &= ~SPI_CR1_DFF; /* one byte mode*/
+	}
+	else{
+		SPI1->CR1 |= SPI_CR1_DFF;/* two byte mode */
+	}
+}
+
+void spi1_dma2_SG_1byte(uint8_t* data, uint16_t count_byte){
+	spi1_set_data_format(BYTE);
+	dma2_sent_get_1byte(data, count_byte);
+	
+}
+
+void spi1_dam2_SG_2byte(uint8_t* data, uint16_t count_byte){
+	spi1_set_data_format(WORD);
+	dam2_sent_get_2byte(data, count_byte);
+	
+}
+
+void spi1_dam2_SG_2Nbyte(uint8_t* data, uint16_t count_byte){
+	spi1_set_data_format(WORD);
+	dam2_sent_get_2Nbyte(data, count_byte);
+	
 }

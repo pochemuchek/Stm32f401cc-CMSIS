@@ -67,7 +67,7 @@ void dma2s2_init_rx(void){
 	  DMA_SxCR_MBURST = 0, for single transfer
 		DMA_SxCR_HTIE = 0, HT interrupt disabled 
 	*/
-	DMA2_Stream2->CR |= (DMA_SxCR_CHSEL_0); /* Chanel selected, 2, spi1_rx*/
+	DMA2_Stream2->CR |= (DMA_SxCR_CHSEL_1); /* Chanel selected, 2, spi1_rx*/
 	DMA2_Stream2->CR |= DMA_SxCR_PL_0; /* medium priority level */
 	DMA2_Stream2->CR |= DMA_SxCR_MINC; /* memory increment enable */
 	DMA2_Stream2->CR |= DMA_SxCR_TCIE; /* transfer complete interrupt enable*/
@@ -91,5 +91,40 @@ void DMA2_Stream2_IRQHandler(void){
 			
 		status_transfer_dma2 = 1;
 	}
+}
+
+void dma2_sent_get_1byte(uint8_t* data, uint16_t count_byte){
+	status_transfer_dma2 = 0;
+	
+	/* ---------- get stream ---------- */
+	DMA2_Stream2->CR &= ~DMA_SxCR_EN; /* disable dma2 */
+	DMA2_Stream2->CR |= DMA_SxCR_MINC; 
+	DMA2_Stream2->NDTR = (uint32_t)(count_byte);
+	DMA2_Stream2->CR |= DMA_SxCR_EN;
+	/* ------------------------------- */
+	
+	
+	/* ---------- sent stream ---------- */
+	DMA2_Stream3->CR &= ~DMA_SxCR_EN; /* disable dma2 */
+	DMA2_Stream3->CR |= DMA_SxCR_MINC; 
+	DMA2_Stream3->NDTR = (uint32_t)(count_byte);
+	DMA2_Stream3->CR &=	~DMA_SxCR_MSIZE;/* memmory frame format is byte */
+	DMA2_Stream3->CR &=	~DMA_SxCR_PSIZE;/* periph frame format is byte */
+	DMA2_Stream3->CR |= DMA_SxCR_EN;
+	/* ------------------------------- */
+}
+	
+void dam2_sent_get_2byte(uint8_t* data, uint16_t count_byte){
+	status_transfer_dma2 = 0;
+	DMA2_Stream2->CR &= ~DMA_SxCR_EN; /* disable dma2 */
+	
+	
+}
+
+void dam2_sent_get_2Nbyte(uint8_t* data, uint16_t count_byte){
+	status_transfer_dma2 = 0;
+	DMA2_Stream2->CR &= ~DMA_SxCR_EN; /* disable dma2 */
+	
+	
 }
 	
