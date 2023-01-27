@@ -98,10 +98,10 @@ void spi1_init_slave(void){
 }	
 
 void spi1_dma_tx_init(void){
-	dma_init_tx();
+	dma2_init_tx();
 	SPI1->CR2 |= SPI_CR2_TXDMAEN;
 }
 void spi1_dma_rx_init(void){
-	dma_init_rx();
+	dma2_init_rx();
 	SPI1->CR2 |= SPI_CR2_RXDMAEN;
 }
