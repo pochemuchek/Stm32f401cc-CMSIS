@@ -58,16 +58,16 @@ void dma2s2_init_rx(void){
 	while(DMA2_Stream2->CR & DMA_SxCR_EN); /* wait when DAM2 will be ready to configuration */
 	
 	DMA2_Stream2->PAR |= (uint32_t)(&SPI1->DR); /* set memory addres of peripheral */
-	DMA2_Stream2->M0AR |= (uint32_t)(&dma_arr_rx[0]); /* set memory addres of buffer tx, double mode isn't active */
+	DMA2_Stream2->M0AR |= (uint32_t)(&dma_arr_rx[0]); /* set memory addres of buffer Rx, double mode isn't active */
 	
 	DMA2_Stream2->CR = 0;
 	/*
-		DMA_SxCR_MSIZE = 0, for byte
+		DMA_SxCR_MSIZE = 0, for byte	
 		DMA_SxCR_PSIZE = 0, for byte
 	  DMA_SxCR_MBURST = 0, for single transfer
 		DMA_SxCR_HTIE = 0, HT interrupt disabled 
 	*/
-	DMA2_Stream2->CR |= (DMA_SxCR_CHSEL_1); /* Chanel selected, 2, spi1_rx*/
+	DMA2_Stream2->CR |= (DMA_SxCR_CHSEL_0 | DMA_SxCR_CHSEL_1); /* Chanel selected, 3, spi1_rx*/
 	DMA2_Stream2->CR |= DMA_SxCR_PL_0; /* medium priority level */
 	DMA2_Stream2->CR |= DMA_SxCR_MINC; /* memory increment enable */
 	DMA2_Stream2->CR |= DMA_SxCR_TCIE; /* transfer complete interrupt enable*/
@@ -103,7 +103,10 @@ void dma2_sent_get_1byte(uint8_t* data, uint16_t count_byte){
 	DMA2_Stream2->CR |= DMA_SxCR_EN;
 	/* ------------------------------- */
 	
-	
+	int i;
+	for(i = 0; i < count_byte ; i++){ /* Preparing data for transmit */
+		dma_arr_tx[i] = data[i];
+	}		
 	/* ---------- sent stream ---------- */
 	DMA2_Stream3->CR &= ~DMA_SxCR_EN; /* disable dma2 */
 	DMA2_Stream3->CR |= DMA_SxCR_MINC; 
@@ -114,17 +117,58 @@ void dma2_sent_get_1byte(uint8_t* data, uint16_t count_byte){
 	/* ------------------------------- */
 }
 	
-void dam2_sent_get_2byte(uint8_t* data, uint16_t count_byte){
+void dam2_sent_get_2byte(uint16_t* data, uint16_t count_word){
 	status_transfer_dma2 = 0;
+
+		/* ---------- get stream ---------- */
 	DMA2_Stream2->CR &= ~DMA_SxCR_EN; /* disable dma2 */
+	DMA2_Stream2->CR |= DMA_SxCR_MINC; 
+	if(count_word > 0){
+		DMA2_Stream2->NDTR = (uint32_t)(count_word);
+		DMA2_Stream2->CR |= DMA_SxCR_EN;
+	}
 	
+	/* ------------------------------- */
+	
+	int i;
+	for(i = 0; i < count_word ; i++){ /* Preparing data for transmit */
+		dma_arr_tx[i] = data[i];
+	}		
+	/* ---------- sent stream ---------- */
+	DMA2_Stream3->CR &= ~DMA_SxCR_EN; /* disable dma2 */
+	DMA2_Stream3->CR |= DMA_SxCR_MINC; 
+	DMA2_Stream3->NDTR = (uint32_t)(count_word);
+	DMA2_Stream3->CR |=	DMA_SxCR_MSIZE;/* memmory frame format is byte */
+	DMA2_Stream3->CR |=	DMA_SxCR_PSIZE;/* periph frame format is byte */
+	DMA2_Stream3->CR |= DMA_SxCR_EN;
+	/* ------------------------------- */
 	
 }
 
-void dam2_sent_get_2Nbyte(uint8_t* data, uint16_t count_byte){
+void dam2_sent_get_2Nbyte(uint16_t* data, uint16_t count_word){
 	status_transfer_dma2 = 0;
-	DMA2_Stream2->CR &= ~DMA_SxCR_EN; /* disable dma2 */
 	
+	/* ---------- get stream ---------- */
+	DMA2_Stream2->CR &= ~DMA_SxCR_EN; /* disable dma2 */
+	DMA2_Stream2->CR |= DMA_SxCR_MINC; 
+	if(count_word > 0){
+		DMA2_Stream2->NDTR = (uint32_t)(count_word);
+		DMA2_Stream2->CR |= DMA_SxCR_EN;
+	}
+	/* ------------------------------- */
+	
+	int i;
+	for(i = 0; i < count_word ; i++){ /* Preparing data for transmit */
+		dma_arr_tx[i] = data[i];
+	}		
+	/* ---------- sent stream ---------- */
+	DMA2_Stream3->CR &= ~DMA_SxCR_EN; /* disable dma2 */
+	DMA2_Stream3->CR |= DMA_SxCR_MINC; 
+	DMA2_Stream3->NDTR = (uint32_t)(count_word);
+	DMA2_Stream3->CR &=	~DMA_SxCR_MSIZE;/* memmory frame format is byte */
+	DMA2_Stream3->CR &=	~DMA_SxCR_PSIZE;/* periph frame format is byte */
+	DMA2_Stream3->CR |= DMA_SxCR_EN;
+	/* ------------------------------- */
 	
 }
 	

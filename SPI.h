@@ -20,5 +20,5 @@ void spi1_dma2_rx_init(void);
 
 void spi1_set_data_format(uint8_t format);
 void spi1_dma2_SG_1byte(uint8_t* data, uint16_t count_byte);
-void spi1_dam2_SG_2byte(uint8_t* data, uint16_t count_byte);
-void spi1_dam2_SG_2Nbyte(uint8_t* data, uint16_t count_byte);
+void spi1_dma2_SG_2byte(uint16_t* data, uint16_t count_words);
+void spi1_dma2_SG_2Nbyte(uint16_t* data, uint16_t count_words);

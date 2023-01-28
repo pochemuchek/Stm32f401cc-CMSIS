@@ -12,5 +12,5 @@ void DMA2_Stream3_IRQHandler(void);
 void DMA2_Stream2_IRQHandler(void);
 
 void dma2_sent_get_1byte(uint8_t* data, uint16_t count_byte);
-void dam2_sent_get_2byte(uint8_t* data, uint16_t count_byte);
-void dam2_sent_get_2Nbyte(uint8_t* data, uint16_t count_byte);
+void dam2_sent_get_2byte(uint16_t* data, uint16_t count_word);
+void dam2_sent_get_2Nbyte(uint16_t* data, uint16_t count_word);
