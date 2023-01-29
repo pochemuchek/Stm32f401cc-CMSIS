@@ -1,5 +1,7 @@
 #include "global.h"
 
+uint8_t flag_delay = 0;
+
 void clock_8Mhz_init(void) {
 	RCC->CR &= ~RCC_CR_PLLON;
 	while(RCC->CR & RCC_CR_PLLRDY);
@@ -15,10 +17,10 @@ void clock_8Mhz_init(void) {
 	RCC->PLLCFGR &= ~RCC_PLLCFGR_PLLSRC; /* select HSI 16 MHz clocked PLL */
 	
 	RCC->PLLCFGR &= ~RCC_PLLCFGR_PLLM;
-	RCC->PLLCFGR |= RCC_PLLCFGR_PLLM_3; /* PLL_M = 8 */
+	RCC->PLLCFGR |= (RCC_PLLCFGR_PLLM_1 | RCC_PLLCFGR_PLLM_3); /* PLL_M = 10 */
 	
 	RCC->PLLCFGR &= ~RCC_PLLCFGR_PLLN;
-	RCC->PLLCFGR |= RCC_PLLCFGR_PLLN_3; /* PLL_N = 8 */
+	RCC->PLLCFGR |= (RCC_PLLCFGR_PLLN_1 | RCC_PLLCFGR_PLLN_3); /* PLL_N = 10 */
 	
 	RCC->PLLCFGR &= ~RCC_PLLCFGR_PLLP; /* PLL_P = 2 */
 	
@@ -28,11 +30,9 @@ void clock_8Mhz_init(void) {
 	RCC->CFGR |= (RCC_CFGR_SW_1 | ~RCC_CFGR_SW_0);
 	while((RCC->CFGR & RCC_CFGR_SWS_1) != RCC_CFGR_SWS_1);
 	
+	RCC->CFGR &= ~RCC_CFGR_HPRE;
+	
 	SystemCoreClockUpdate();
-}
-
-void clock_12MHz_init(void){
-
 }
 
 void global_init_tim3(int arr, int psc){
@@ -48,8 +48,15 @@ void global_init_tim3(int arr, int psc){
 }
 
 void TIM3_IRQHandler(void){
-	
+	TIM3->SR &= ~TIM_SR_UIF;
+	GPIOC->ODR ^= GPIO_ODR_ODR_13;
+	flag_delay = 1;
+	TIM3->CR1 &= ~TIM_CR1_CEN;
 }
+
 void delay_ms(int time){
-	
+	flag_delay = 0;
+	global_init_tim3(time, SystemCoreClock / 1000);
+	TIM3->CR1 |= TIM_CR1_CEN;
+	while(!flag_delay);
 }

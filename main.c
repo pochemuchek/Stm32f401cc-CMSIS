@@ -17,11 +17,7 @@ int main(void)
 	
 	/* spi1_init_main(MASTER); */
   clock_8Mhz_init(); 
-	int i = 0;
-	while(1) 
-	{
-		for(i = 0; i< 15625;i++){}
-		GPIOC->ODR ^= GPIO_ODR_ODR_13;
-	}
-	
+	while(1){
+		delay_ms(1000);
+	}		
 }
