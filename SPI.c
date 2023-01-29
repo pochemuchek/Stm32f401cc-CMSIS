@@ -115,18 +115,18 @@ void spi1_set_data_format(uint8_t format){
 
 void spi1_dma2_SG_1byte(uint8_t* data, uint16_t count_byte){
 	spi1_set_data_format(BYTE);
-	dma2_sent_get_1byte(data, count_byte);
+	dma2_send_get_1byte(data, count_byte);
 	spi1_clear_nss();
 }
 
 void spi1_dma2_SG_2byte(uint16_t* data, uint16_t count_words){
 	spi1_set_data_format(WORD);
-	dam2_sent_get_2byte(data, count_words);
+	dma2_send_get_2byte(data[0], count_words);
 	
 }
 
 void spi1_dma2_SG_2Nbyte(uint16_t* data, uint16_t count_words){
 	spi1_set_data_format(WORD);
-	dam2_sent_get_2Nbyte(data, count_words);
+	dma2_send_get_2Nbyte(data, count_words);
 	
 }
